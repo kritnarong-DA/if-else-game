@@ -1,0 +1,618 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>เกม If-Else Decision</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column. Code editor on top, the claim under it, then True (left lane) and False (right lane) side by side. The answer opens below as a trace of what the program really did. */
+:root {
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --ink: #122033;
+  --muted: #566578;
+  --line: #d5dde7;
+  --note-bg: #eaf0f7;
+  --true-fill: #1d5fd1;
+  --true-ink: #1d5fd1;
+  --true-soft: #e3ecfb;
+  --false-fill: #b45309;
+  --false-ink: #a24a08;
+  --false-soft: #fbecd9;
+  --ok: #157a3d;
+  --ok-soft: #dcf2e4;
+  --bad: #c0282d;
+  --bad-soft: #fbe2e2;
+  --code-bg: #0e1a2b;
+  --code-fg: #e3ebf5;
+  --code-dim: #8497ae;
+  --code-run: #183456;
+  --code-edge: #1c2f47;
+  --syn-kw: #7cc4ff;
+  --syn-str: #a5e075;
+  --syn-num: #ffcf6b;
+  --syn-fn: #d9b8ff;
+  --f-display: 'Prompt', 'Sarabun', system-ui, sans-serif;
+  --f-body: 'Sarabun', 'Noto Sans Thai', system-ui, sans-serif;
+  --f-code: 'JetBrains Mono', ui-monospace, Consolas, 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a121e;
+    --surface: #121e2f;
+    --ink: #e6edf6;
+    --muted: #9bb0c7;
+    --line: #243850;
+    --note-bg: #192a41;
+    --true-fill: #2b68d9;
+    --true-ink: #7fb0ff;
+    --true-soft: #13284a;
+    --false-fill: #b45309;
+    --false-ink: #f3ae52;
+    --false-soft: #33240f;
+    --ok: #4cc27a;
+    --ok-soft: #10301e;
+    --bad: #ff7c80;
+    --bad-soft: #38171a;
+    --code-bg: #070f19;
+    --code-edge: #16273b;
+    --code-run: #14304f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a121e;
+  --surface: #121e2f;
+  --ink: #e6edf6;
+  --muted: #9bb0c7;
+  --line: #243850;
+  --note-bg: #192a41;
+  --true-fill: #2b68d9;
+  --true-ink: #7fb0ff;
+  --true-soft: #13284a;
+  --false-fill: #b45309;
+  --false-ink: #f3ae52;
+  --false-soft: #33240f;
+  --ok: #4cc27a;
+  --ok-soft: #10301e;
+  --bad: #ff7c80;
+  --bad-soft: #38171a;
+  --code-bg: #070f19;
+  --code-edge: #16273b;
+  --code-run: #14304f;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 44px;
+}
+.app { max-width: 940px; margin: 0 auto; }
+button { font: inherit; }
+button:focus-visible, .scroll:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+code { font-family: var(--f-code); font-size: .9em; background: var(--note-bg); padding: 1px 7px; border-radius: 6px; }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.brand { font-family: var(--f-code); font-weight: 600; font-size: 14px; color: var(--muted); }
+.brand b { color: var(--ink); font-weight: 600; }
+.stats { display: flex; gap: 18px; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats b { color: var(--ink); font-family: var(--f-display); font-weight: 600; }
+.pips { display: flex; gap: 6px; margin-bottom: 22px; }
+.pip { flex: 1; height: 8px; border-radius: 4px; background: var(--line); }
+.pip.cur { background: var(--muted); }
+.pip.ok { background: var(--ok); }
+.pip.bad { background: var(--bad); }
+
+/* buttons */
+.btn-primary {
+  font-family: var(--f-display); font-weight: 600; font-size: 18px;
+  background: var(--ink); color: var(--bg);
+  border: 0; border-radius: 10px; padding: 13px 28px; cursor: pointer;
+}
+.btn-primary:hover { opacity: .9; }
+
+/* start */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+@media (max-width: 760px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+.eyebrow { font-size: 15px; color: var(--muted); font-weight: 600; margin: 0 0 4px; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(36px, 8vw, 58px); line-height: 1.1; margin: 0 0 16px; text-wrap: balance; }
+.lead { font-size: 19px; margin: 0 0 18px; max-width: 34em; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; padding: 0; list-style: none; }
+.facts li { font-size: 14px; border: 1px solid var(--line); background: var(--surface); padding: 2px 12px; border-radius: 999px; }
+.how { margin: 0 0 26px; padding-left: 1.4em; max-width: 36em; }
+.how li { margin: 4px 0; }
+.fine { font-size: 14px; color: var(--muted); margin: 18px 0 0; max-width: 36em; }
+.fork { width: 100%; max-width: 520px; height: auto; display: block; justify-self: center; }
+.fork .n-top { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.fork .n-t { fill: var(--true-soft); stroke: var(--true-ink); stroke-width: 1.5; }
+.fork .n-f { fill: var(--false-soft); stroke: var(--false-ink); stroke-width: 1.5; }
+.fork .p-t { fill: none; stroke: var(--true-ink); stroke-width: 2.5; }
+.fork .p-f { fill: none; stroke: var(--false-ink); stroke-width: 2.5; }
+.fork .mk-t { fill: var(--true-ink); }
+.fork .mk-f { fill: var(--false-ink); }
+.fork text { font-family: var(--f-body); }
+.fork .t-code { font-family: var(--f-code); font-size: 18px; fill: var(--ink); }
+.fork .t-big { font-family: var(--f-display); font-weight: 700; font-size: 24px; }
+.fork .t-true { fill: var(--true-ink); }
+.fork .t-false { fill: var(--false-ink); }
+.fork .t-sm { font-size: 14px; fill: var(--muted); }
+
+/* quiz */
+.qhead { display: flex; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; margin-bottom: 10px; }
+.qno { font-family: var(--f-display); font-weight: 700; font-size: 28px; line-height: 1.2; }
+.qprompt { color: var(--muted); font-size: 16px; }
+.editor { background: var(--code-bg); border: 1px solid var(--code-edge); border-radius: 12px; overflow: hidden; }
+.ebar { display: flex; justify-content: space-between; align-items: center; gap: 4px 16px; flex-wrap: wrap; padding: 8px 16px; border-bottom: 1px solid var(--code-edge); font-family: var(--f-code); font-size: 12.5px; color: var(--code-dim); }
+.legend { display: flex; gap: 16px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+.legend .lr i { background: var(--syn-kw); }
+.legend .ls i { background: var(--code-dim); opacity: .5; }
+.scroll { overflow-x: auto; padding: 10px 0; }
+.code { font-family: var(--f-code); font-size: 16px; line-height: 1.7; color: var(--code-fg); min-width: max-content; }
+.ln { display: grid; grid-template-columns: 3.2em auto; padding-right: 18px; }
+.ln .no { color: var(--code-dim); text-align: right; padding-right: 16px; user-select: none; font-variant-numeric: tabular-nums; }
+.ln .tx { white-space: pre; }
+.code.revealed .ln.run { background: var(--code-run); box-shadow: inset 3px 0 0 var(--syn-kw); }
+.code.revealed .ln.run .no { color: var(--syn-kw); }
+.code.revealed .ln.skip { opacity: .4; }
+.k { color: var(--syn-kw); }
+.s { color: var(--syn-str); }
+.n { color: var(--syn-num); }
+.f { color: var(--syn-fn); }
+
+.claim { margin: 14px 0 16px; padding: 14px 18px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.claim .tag { display: block; font-size: 14px; font-weight: 600; color: var(--muted); }
+.claim p { margin: 0; font-size: 21px; font-weight: 600; line-height: 1.55; }
+
+.choices { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.choice {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 2px;
+  min-height: 112px; padding: 16px 18px; border: 0; border-radius: 14px; color: #fff; text-align: left; cursor: pointer;
+  font-family: var(--f-display); transition: transform .12s ease, opacity .2s ease;
+}
+.choice.t { background: var(--true-fill); }
+.choice.f { background: var(--false-fill); }
+.choice .word { font-size: clamp(26px, 5vw, 36px); font-weight: 700; line-height: 1.1; }
+.choice .sub { font-family: var(--f-body); font-size: 15px; font-weight: 500; line-height: 1.4; }
+.choice .key { position: absolute; top: 12px; right: 14px; display: none; font-family: var(--f-code); font-size: 13px; border: 1px solid rgba(255, 255, 255, .6); border-radius: 6px; padding: 0 8px; }
+@media (hover: hover) and (pointer: fine) {
+  .choice .key { display: inline-block; }
+  .choice:not(:disabled):hover { transform: translateY(-2px); }
+}
+.choice:disabled { cursor: default; }
+.choice.dim { opacity: .4; }
+.choice.is-correct { outline: 3px solid var(--ok); outline-offset: 3px; }
+.choice.is-wrong { outline: 3px solid var(--bad); outline-offset: 3px; }
+.choice .badge { position: absolute; top: 12px; left: 14px; background: var(--surface); color: var(--ink); font-family: var(--f-body); font-size: 13px; font-weight: 600; line-height: 1.5; padding: 0 10px; border-radius: 999px; }
+
+/* reveal */
+.reveal { margin-top: 20px; display: grid; gap: 14px; animation: rise .25s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.verdict { display: flex; gap: 14px; align-items: center; padding: 14px 18px; border-radius: 12px; }
+.verdict.ok { background: var(--ok-soft); color: var(--ok); }
+.verdict.bad { background: var(--bad-soft); color: var(--bad); }
+.verdict svg { flex: none; width: 36px; height: 36px; }
+.verdict h2 { margin: 0; font-family: var(--f-display); font-size: 22px; font-weight: 700; line-height: 1.3; }
+.verdict p { margin: 0; color: var(--ink); font-size: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px 12px; }
+.panel h3 { margin: 0 0 8px; font-family: var(--f-display); font-size: 16px; font-weight: 600; }
+.topic { margin: 0 0 12px; font-size: 14px; color: var(--muted); }
+.term { display: grid; gap: 2px; font-family: var(--f-code); font-size: 15.5px; line-height: 1.6; background: var(--code-bg); color: var(--code-fg); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; overflow-x: auto; }
+.term .p { color: var(--code-dim); }
+.term .o { color: var(--syn-str); white-space: pre; }
+.panel ol { margin: 0 0 4px; padding-left: 1.5em; }
+.panel li { margin: 5px 0; }
+.note { display: flex; gap: 12px; background: var(--note-bg); border-radius: 12px; padding: 14px 18px; }
+.note svg { flex: none; width: 24px; height: 24px; margin-top: 3px; color: var(--false-ink); }
+.note h3 { margin: 0 0 2px; font-family: var(--f-display); font-size: 16px; font-weight: 600; }
+.note p { margin: 0; }
+.next { justify-self: end; }
+
+/* result */
+.score-row { display: flex; align-items: flex-end; gap: 12px 28px; flex-wrap: wrap; margin-bottom: 20px; }
+.big { font-family: var(--f-display); font-weight: 700; font-size: clamp(76px, 18vw, 128px); line-height: 1; font-variant-numeric: tabular-nums; }
+.big small { font-size: .38em; font-weight: 500; color: var(--muted); }
+.rmsg { margin: 0 0 4px; font-family: var(--f-display); font-size: clamp(22px, 4vw, 28px); font-weight: 600; line-height: 1.3; text-wrap: balance; }
+.rsub { margin: 0; color: var(--muted); }
+.sides { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 28px; }
+.side { border-radius: 12px; padding: 12px 16px; display: grid; }
+.side b { font-family: var(--f-display); font-size: 26px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.side span { font-size: 15px; }
+.side.t { background: var(--true-soft); color: var(--true-ink); }
+.side.f { background: var(--false-soft); color: var(--false-ink); }
+.rv-title { font-family: var(--f-display); font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+.rv { list-style: none; margin: 0 0 26px; padding: 0; }
+.rv li { display: grid; grid-template-columns: 2.4em minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 0; border-top: 1px solid var(--line); align-items: start; }
+.rn { font-family: var(--f-display); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rt { font-weight: 600; }
+.rd { font-size: 15px; color: var(--muted); }
+.rd b { color: var(--ink); font-weight: 600; }
+.rp { margin: 6px 0 0; font-size: 15px; background: var(--note-bg); padding: 8px 12px; border-radius: 8px; }
+.chip { font-size: 14px; font-weight: 600; padding: 0 12px; border-radius: 999px; }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<div class="app" id="top">
+  <header class="top">
+    <div class="brand"><b>if</b> ( ? ) … <b>else</b></div>
+    <div class="stats" id="stats" hidden></div>
+  </header>
+  <div class="pips" id="pips" hidden aria-hidden="true"></div>
+
+  <!-- START -->
+  <section id="s-start">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">เกมฝึกอ่านโค้ดภาษา C</p>
+        <h1>If-Else Decision</h1>
+        <p class="lead">อ่านโค้ดแล้วตัดสินว่าข้อความที่ให้มาตรงกับผลลัพธ์จริงหรือไม่ ตอบเสร็จจะเห็นเฉลยพร้อมบรรทัดที่โปรแกรมทำงานจริง</p>
+        <ul class="facts">
+          <li>10 ข้อ</li>
+          <li>ม.4 · พื้นฐานภาษา C</li>
+          <li>มีเฉลยทุกข้อ</li>
+        </ul>
+        <ol class="how">
+          <li>อ่านโค้ดภาษา C ที่ให้</li>
+          <li>อ่านข้อความใต้โค้ดว่าตรงกับผลลัพธ์จริงหรือไม่</li>
+          <li>ตรง เลือก <b>True</b> ด้านซ้าย ไม่ตรง เลือก <b>False</b> ด้านขวา (กดปุ่มลูกศร ← → ได้)</li>
+        </ol>
+        <button class="btn-primary" id="startBtn" type="button">เริ่มเกม</button>
+        <p class="fine">โค้ดทุกข้อสมมติว่าอยู่ใน <code>main()</code> และมี <code>#include &lt;stdio.h&gt;</code> แล้ว</p>
+      </div>
+      <svg class="fork" viewBox="0 0 520 232" role="img" aria-label="แผนภาพ: เงื่อนไขแยกเป็นสองทาง ซ้ายคือ True ขวาคือ False">
+        <defs>
+          <marker id="ah-t" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-t" d="M0 0L10 5L0 10z"/></marker>
+          <marker id="ah-f" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-f" d="M0 0L10 5L0 10z"/></marker>
+        </defs>
+        <rect class="n-top" x="150" y="10" width="220" height="52" rx="10"/>
+        <text class="t-code" x="260" y="43" text-anchor="middle">if (เงื่อนไข)</text>
+        <path class="p-t" d="M215 62 C215 112 105 106 105 152" marker-end="url(#ah-t)"/>
+        <path class="p-f" d="M305 62 C305 112 415 106 415 152" marker-end="url(#ah-f)"/>
+        <rect class="n-t" x="20" y="158" width="170" height="64" rx="10"/>
+        <text class="t-big t-true" x="105" y="189" text-anchor="middle">True</text>
+        <text class="t-sm" x="105" y="210" text-anchor="middle">ซ้าย · เป็นจริง</text>
+        <rect class="n-f" x="330" y="158" width="170" height="64" rx="10"/>
+        <text class="t-big t-false" x="415" y="189" text-anchor="middle">False</text>
+        <text class="t-sm" x="415" y="210" text-anchor="middle">ขวา · เป็นเท็จ</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="s-quiz" hidden>
+    <div class="qhead">
+      <span class="qno" id="qno">ข้อ 1</span>
+      <span class="qprompt">ข้อความใต้โค้ดนี้ จริงหรือเท็จ?</span>
+    </div>
+    <div class="editor">
+      <div class="ebar">
+        <span>main.c · ส่วนที่อยู่ใน main()</span>
+        <span class="legend" id="legend" hidden><span class="lr"><i></i>บรรทัดที่ทำงาน</span><span class="ls"><i></i>บรรทัดที่ข้าม</span></span>
+      </div>
+      <div class="scroll" tabindex="0" role="region" aria-label="โค้ดภาษา C"><div class="code" id="code"></div></div>
+    </div>
+    <div class="claim"><span class="tag">ข้อความ</span><p id="claim"></p></div>
+    <div class="choices" role="group" aria-label="เลือกคำตอบ">
+      <button class="choice t" id="btnTrue" type="button"><span class="badge" hidden></span><span class="key" aria-hidden="true">←</span><span class="word">True</span><span class="sub">จริง · ตรงกับผลลัพธ์</span></button>
+      <button class="choice f" id="btnFalse" type="button"><span class="badge" hidden></span><span class="key" aria-hidden="true">→</span><span class="word">False</span><span class="sub">เท็จ · ไม่ตรงกับผลลัพธ์</span></button>
+    </div>
+    <div class="reveal" id="reveal" hidden aria-live="polite"></div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="s-result" hidden></section>
+</div>
+
+<script>
+(function () {
+  var Q = [
+    {
+      topic: 'if-else พื้นฐาน',
+      code: ['int x = 10;', 'if (x > 5)', '    printf("A");', 'else', '    printf("B");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>A</code>',
+      answer: true, out: 'A', run: [1, 2, 3], skip: [5],
+      steps: [
+        'ตัวแปร <code>x</code> เก็บค่า 10',
+        'ตรวจเงื่อนไข <code>x &gt; 5</code> คือ 10 &gt; 5 ซึ่ง<b>เป็นจริง</b>',
+        'จึงทำคำสั่งใต้ <code>if</code> คือแสดง <code>A</code> แล้วข้ามส่วน <code>else</code> ทั้งหมด'
+      ],
+      pitfall: 'if-else เลือกทำเพียงทางเดียวเท่านั้น เมื่อเงื่อนไขเป็นจริง ส่วน else จะไม่ถูกทำเลย'
+    },
+    {
+      topic: 'ค่าขอบเขตของ &gt; กับ &gt;=',
+      code: ['int score = 50;', 'if (score > 50)', '    printf("Pass");', 'else', '    printf("Fail");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>Pass</code>',
+      answer: false, out: 'Fail', run: [1, 2, 5], skip: [3],
+      steps: [
+        'ตัวแปร <code>score</code> เก็บค่า 50',
+        'ตรวจ <code>score &gt; 50</code> คือ 50 &gt; 50 ซึ่ง<b>เป็นเท็จ</b> เพราะ <code>&gt;</code> ไม่นับค่าที่เท่ากัน',
+        'จึงไปทำส่วน <code>else</code> แสดง <code>Fail</code>'
+      ],
+      pitfall: 'ค่าที่อยู่บนเส้นขอบ เช่น 50 ต้องเลือกให้ถูกระหว่าง <code>&gt;</code> กับ <code>&gt;=</code> ถ้าต้องการให้ 50 คะแนนผ่าน ต้องเขียน <code>score &gt;= 50</code> พลาดจุดนี้คนที่ได้คะแนนพอดีจะถูกตัดสินผิดทุกคน'
+    },
+    {
+      topic: 'เลขคู่ เลขคี่ ด้วย %',
+      code: ['int a = 7;', 'if (a % 2 == 0)', '    printf("Even");', 'else', '    printf("Odd");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>Odd</code>',
+      answer: true, out: 'Odd', run: [1, 2, 5], skip: [3],
+      steps: [
+        'ตัวแปร <code>a</code> เก็บค่า 7',
+        '<code>7 % 2</code> คือเศษจากการหาร ได้ 1',
+        '<code>1 == 0</code> <b>เป็นเท็จ</b> จึงไปทำส่วน <code>else</code> แสดง <code>Odd</code>'
+      ],
+      pitfall: '<code>%</code> คือเศษจากการหาร ไม่ใช่เปอร์เซ็นต์ และเลขคู่หาร 2 ลงตัวเสมอ เศษจึงเป็น 0 อย่าลืมว่าการเปรียบเทียบต้องใช้ <code>==</code> สองตัว'
+    },
+    {
+      topic: 'else ผูกกับ if ตัวที่ใกล้ที่สุด',
+      code: ['int s = 85;', 'if (s >= 80)', '    printf("A");', 'if (s >= 70)', '    printf("B");', 'else', '    printf("C");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>A</code> เพียงตัวเดียว',
+      answer: false, out: 'AB', run: [1, 2, 3, 4, 5], skip: [7],
+      steps: [
+        'ตัวแปร <code>s</code> เก็บค่า 85',
+        '<code>s &gt;= 80</code> <b>เป็นจริง</b> จึงแสดง <code>A</code>',
+        '<code>if</code> ตัวที่สองเป็นคำสั่งใหม่ที่ถูกตรวจแยกต่างหาก <code>s &gt;= 70</code> <b>เป็นจริง</b> จึงแสดง <code>B</code> ต่อท้าย',
+        '<code>else</code> ผูกกับ <code>if</code> ตัวที่สองเท่านั้น จึงถูกข้าม ผลลัพธ์คือ <code>AB</code>'
+      ],
+      pitfall: '<code>if</code> สองตัวที่เรียงกันไม่ได้เชื่อมกัน ทั้งสองตัวถูกตรวจเสมอ ถ้าต้องการเลือกเกรดเดียวต้องต่อเป็น <code>else if</code> สายเดียว ไม่เช่นนั้นคนได้ 85 จะได้หลายเกรดพร้อมกัน'
+    },
+    {
+      topic: 'if ที่ไม่มี { }',
+      code: ['int x = 1;', 'if (x > 5)', '    printf("A");', 'printf("B");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>B</code>',
+      answer: true, out: 'B', run: [1, 2, 4], skip: [3],
+      steps: [
+        'ตัวแปร <code>x</code> เก็บค่า 1',
+        '<code>x &gt; 5</code> คือ 1 &gt; 5 <b>เป็นเท็จ</b> จึงข้ามคำสั่งที่ <code>if</code> คุมอยู่ คือบรรทัดที่ 3',
+        'บรรทัดที่ 4 อยู่นอก <code>if</code> จึงทำงานเสมอ แสดง <code>B</code>'
+      ],
+      pitfall: 'ถ้าไม่มี <code>{ }</code> ตัว <code>if</code> คุมได้เพียงคำสั่งเดียวที่ตามมา ภาษา C ไม่สนใจการเยื้องบรรทัด ควรใส่ <code>{ }</code> ทุกครั้งแม้มีคำสั่งเดียว กันพลาดตอนมาเพิ่มบรรทัดทีหลัง'
+    },
+    {
+      topic: 'เครื่องหมาย ; หลัง if',
+      code: ['int n = 3;', 'if (n > 5);', '    printf("Big");'],
+      claim: 'ไม่มีข้อความใดแสดงบนหน้าจอ เพราะ 3 ไม่มากกว่า 5',
+      answer: false, out: 'Big', run: [1, 2, 3], skip: [],
+      steps: [
+        'ตัวแปร <code>n</code> เก็บค่า 3 และ <code>n &gt; 5</code> <b>เป็นเท็จ</b>',
+        'แต่เครื่องหมาย <code>;</code> ท้ายบรรทัดที่ 2 ทำให้ <code>if</code> คุม &quot;คำสั่งว่าง&quot; ที่ไม่ทำอะไรเลย',
+        'บรรทัดที่ 3 จึงไม่ได้อยู่ใต้ <code>if</code> แม้จะเยื้องเข้าไป มันทำงานเสมอ แสดง <code>Big</code>'
+      ],
+      pitfall: 'ห้ามใส่ <code>;</code> ท้าย <code>if (...)</code> โปรแกรมไม่ขึ้น error แต่ทำงานผิด จึงเป็นบั๊กที่หาเจอยากมาก ให้เขียนเงื่อนไขแล้วตามด้วย <code>{ }</code> ทันที'
+    },
+    {
+      topic: 'ตัวเชื่อม || (หรือ)',
+      code: ['int age = 20, money = 50;', 'if (age >= 18 || money >= 100)', '    printf("Enter");', 'else', '    printf("Stop");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>Enter</code>',
+      answer: true, out: 'Enter', run: [1, 2, 3], skip: [5],
+      steps: [
+        '<code>age</code> เป็น 20 และ <code>money</code> เป็น 50',
+        '<code>age &gt;= 18</code> <b>เป็นจริง</b>',
+        '<code>||</code> (หรือ) จริงเพียงข้อเดียวก็ผ่าน เงื่อนไขทั้งหมดจึงเป็นจริง แสดง <code>Enter</code>'
+      ],
+      pitfall: '<code>||</code> คือ &quot;หรือ&quot; จริงอย่างน้อยหนึ่งข้อก็พอ ส่วน <code>&amp;&amp;</code> คือ &quot;และ&quot; ต้องจริงทั้งสองข้อ ถ้าข้อนี้เป็น <code>&amp;&amp;</code> ผลจะเป็น <code>Stop</code>'
+    },
+    {
+      topic: '= กับ ==',
+      code: ['int x = 5;', 'if (x = 10)', '    printf("Yes");', 'else', '    printf("No");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>No</code> เพราะ x เท่ากับ 5 ไม่ใช่ 10',
+      answer: false, out: 'Yes', run: [1, 2, 3], skip: [5],
+      steps: [
+        'ตัวแปร <code>x</code> เก็บค่า 5',
+        'ในเงื่อนไข <code>x = 10</code> เป็นการ<b>กำหนดค่า</b> ไม่ใช่การเปรียบเทียบ <code>x</code> จึงกลายเป็น 10',
+        'ผลของนิพจน์นี้คือ 10 ซึ่งไม่ใช่ 0 ภาษา C ถือว่า<b>เป็นจริง</b> จึงแสดง <code>Yes</code>'
+      ],
+      pitfall: '<code>=</code> คือกำหนดค่า <code>==</code> คือเปรียบเทียบ เขียนสลับกันโปรแกรมก็ยังคอมไพล์ผ่าน (อย่างมากมีแค่คำเตือน) และค่าตัวแปรถูกเปลี่ยนโดยไม่รู้ตัว จำไว้ว่าใน C ค่า 0 คือเท็จ ค่าอื่นทั้งหมดคือจริง'
+    },
+    {
+      topic: 'if ซ้อน if',
+      code: ['int x = 12;', 'if (x > 10) {', '    if (x % 2 == 0)', '        printf("Big even");', '    else', '        printf("Big odd");', '} else', '    printf("Small");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>Big even</code>',
+      answer: true, out: 'Big even', run: [1, 2, 3, 4], skip: [6, 8],
+      steps: [
+        'ตัวแปร <code>x</code> เก็บค่า 12 และ <code>x &gt; 10</code> <b>เป็นจริง</b> จึงเข้าไปในปีกกาแรก',
+        'ตรวจ <code>if</code> ชั้นใน <code>12 % 2 == 0</code> เศษเป็น 0 <b>เป็นจริง</b> จึงแสดง <code>Big even</code>',
+        '<code>else</code> ชั้นใน และ <code>else</code> ชั้นนอก (<code>Small</code>) ถูกข้ามทั้งหมด'
+      ],
+      pitfall: 'อ่านทีละชั้นจากนอกเข้าใน <code>else</code> จะจับคู่กับ <code>if</code> ที่ใกล้ที่สุดเสมอ ใช้ <code>{ }</code> ช่วยให้เห็นการจับคู่ชัดเจน และถ้าลืมปิดปีกกาโปรแกรมจะคอมไพล์ไม่ผ่าน'
+    },
+    {
+      topic: 'ลำดับของ else if',
+      code: ['int n = 15;', 'if (n % 3 == 0)', '    printf("Fizz");', 'else if (n % 5 == 0)', '    printf("Buzz");', 'else if (n % 3 == 0 && n % 5 == 0)', '    printf("FizzBuzz");'],
+      claim: 'ผลลัพธ์ที่แสดงบนหน้าจอคือ <code>FizzBuzz</code>',
+      answer: false, out: 'Fizz', run: [1, 2, 3], skip: [4, 5, 6, 7],
+      steps: [
+        'ตัวแปร <code>n</code> เก็บค่า 15 ซึ่งหารด้วย 3 และ 5 ลงตัวทั้งคู่',
+        'แต่เงื่อนไขแรก <code>15 % 3 == 0</code> ถูกตรวจก่อนและ<b>เป็นจริง</b> จึงแสดง <code>Fizz</code>',
+        'ในสาย <code>else if</code> เมื่อเจอเงื่อนไขที่จริงแล้วจะหยุดทันที เงื่อนไข <code>FizzBuzz</code> ที่อยู่ท้ายสุดจึงไม่ถูกตรวจเลย'
+      ],
+      pitfall: 'ใน <code>else if</code> ลำดับสำคัญมาก เงื่อนไขที่เจาะจงที่สุด (หารลงตัวทั้ง 3 และ 5) ต้องอยู่ก่อนเงื่อนไขกว้าง ๆ ไม่เช่นนั้นจะไม่มีวันถูกใช้งาน'
+    }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var i = 0, score = 0, picks = [], results = [], answered = false;
+
+  var ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-7"/></svg>';
+  var ICON_BAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg>';
+  var ICON_WARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/></svg>';
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function hl(line) {
+    return esc(line).replace(/("[^"]*")|(\b(?:if|else|int|return)\b)|(\b\d+\b)|(\bprintf\b)/g, function (m, str, kw, num, fn) {
+      if (str) return '<span class="s">' + m + '</span>';
+      if (kw) return '<span class="k">' + m + '</span>';
+      if (num) return '<span class="n">' + m + '</span>';
+      return '<span class="f">' + m + '</span>';
+    });
+  }
+  function scrollTop() { $('top').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
+
+  function show(name) {
+    ['start', 'quiz', 'result'].forEach(function (n) { $('s-' + n).hidden = n !== name; });
+    $('stats').hidden = name === 'start';
+    $('pips').hidden = name === 'start';
+  }
+
+  function renderHud() {
+    var shown = Math.min(i + 1, Q.length);
+    $('stats').innerHTML = '<span>ข้อ <b>' + shown + '</b> / ' + Q.length + '</span><span>คะแนน <b>' + score + '</b></span>';
+    var h = '';
+    for (var k = 0; k < Q.length; k++) {
+      var c = 'pip';
+      if (results[k] === true) c += ' ok';
+      else if (results[k] === false) c += ' bad';
+      else if (k === i && !$('s-quiz').hidden) c += ' cur';
+      h += '<span class="' + c + '"></span>';
+    }
+    $('pips').innerHTML = h;
+  }
+
+  function startGame() {
+    i = 0; score = 0; picks = []; results = []; answered = false;
+    show('quiz');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    var q = Q[i];
+    answered = false;
+    $('qno').textContent = 'ข้อ ' + (i + 1);
+    var code = $('code');
+    code.classList.remove('revealed');
+    code.innerHTML = q.code.map(function (l, k) {
+      return '<div class="ln" data-n="' + (k + 1) + '"><span class="no">' + (k + 1) + '</span><span class="tx">' + hl(l) + '</span></div>';
+    }).join('');
+    $('legend').hidden = true;
+    $('claim').innerHTML = q.claim;
+    [$('btnTrue'), $('btnFalse')].forEach(function (b) {
+      b.disabled = false;
+      b.classList.remove('dim', 'is-correct', 'is-wrong');
+      var bd = b.querySelector('.badge');
+      bd.hidden = true; bd.textContent = '';
+    });
+    $('reveal').hidden = true;
+    $('reveal').innerHTML = '';
+    renderHud();
+    scrollTop();
+  }
+
+  function answer(val) {
+    if (answered) return;
+    answered = true;
+    var q = Q[i];
+    var correct = val === q.answer;
+    picks[i] = val; results[i] = correct;
+    if (correct) score++;
+
+    [[$('btnTrue'), true], [$('btnFalse'), false]].forEach(function (p) {
+      var b = p[0], bv = p[1], bd = b.querySelector('.badge');
+      b.disabled = true;
+      if (bv === q.answer) {
+        b.classList.add('is-correct');
+        bd.textContent = val === bv ? 'ถูกต้อง' : 'เฉลย';
+        bd.hidden = false;
+      } else if (bv === val) {
+        b.classList.add('is-wrong');
+        bd.textContent = 'คุณเลือก';
+        bd.hidden = false;
+      } else {
+        b.classList.add('dim');
+      }
+    });
+
+    var code = $('code');
+    code.classList.add('revealed');
+    Array.prototype.forEach.call(code.querySelectorAll('.ln'), function (el) {
+      var n = +el.getAttribute('data-n');
+      if (q.run.indexOf(n) > -1) el.classList.add('run');
+      else if (q.skip.indexOf(n) > -1) el.classList.add('skip');
+    });
+    $('legend').hidden = false;
+
+    var last = i === Q.length - 1;
+    var ans = q.answer ? 'True' : 'False';
+    $('reveal').innerHTML =
+      '<div class="verdict ' + (correct ? 'ok' : 'bad') + '">' + (correct ? ICON_OK : ICON_BAD) +
+        '<div><h2>' + (correct ? 'ถูกต้อง' : 'ยังไม่ถูก') + '</h2><p>เฉลย: ข้อความนี้เป็น <b>' + ans + '</b></p></div></div>' +
+      '<div class="panel">' +
+        '<p class="topic">หัวข้อ · ' + q.topic + '</p>' +
+        '<h3>ผลที่ได้เมื่อรันจริง</h3>' +
+        '<div class="term"><span class="p">$ ./a.out</span><span class="o">' + esc(q.out) + '</span></div>' +
+        '<h3>ไล่ทีละขั้น</h3>' +
+        '<ol>' + q.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' +
+      '</div>' +
+      '<div class="note">' + ICON_WARN + '<div><h3>ข้อควรระวัง</h3><p>' + q.pitfall + '</p></div></div>' +
+      '<button class="btn-primary next" id="nextBtn" type="button">' + (last ? 'ดูสรุปคะแนน' : 'ข้อต่อไป') + '</button>';
+    $('reveal').hidden = false;
+    $('nextBtn').addEventListener('click', next);
+    renderHud();
+    $('nextBtn').focus({ preventScroll: true });
+    $('reveal').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+  }
+
+  function next() {
+    if (i < Q.length - 1) { i++; renderQuestion(); }
+    else showResult();
+  }
+
+  function showResult() {
+    var total = Q.length;
+    var nT = Q.filter(function (q) { return q.answer; }).length, nF = total - nT;
+    var okT = 0, okF = 0;
+    Q.forEach(function (q, k) { if (results[k]) { if (q.answer) okT++; else okF++; } });
+    var msg;
+    if (score === total) msg = 'ครบทุกข้อ อ่านโค้ดได้แม่นเหมือนคอมไพเลอร์';
+    else if (score >= 8) msg = 'ดีมาก เข้าใจโครงสร้าง if-else ได้ดี เหลือไม่กี่จุดให้ทบทวน';
+    else if (score >= 5) msg = 'ผ่านครึ่งทางแล้ว ลองดูข้อที่ผิดด้านล่างและทำความเข้าใจกับดักแต่ละแบบ';
+    else msg = 'ยังมีหลายจุดที่ต้องทบทวน เริ่มจากข้อที่ผิดด้านล่าง แล้วเล่นอีกครั้ง';
+
+    var rows = Q.map(function (q, k) {
+      var ok = results[k];
+      return '<li><span class="rn">' + (k + 1) + '</span><div><div class="rt">' + q.topic + '</div>' +
+        '<div class="rd">ตอบ <b>' + (picks[k] ? 'True' : 'False') + '</b> · เฉลย <b>' + (q.answer ? 'True' : 'False') + '</b></div>' +
+        (ok ? '' : '<p class="rp">' + q.pitfall + '</p>') +
+        '</div><span class="chip ' + (ok ? 'ok' : 'bad') + '">' + (ok ? 'ถูก' : 'ผิด') + '</span></li>';
+    }).join('');
+
+    $('s-result').innerHTML =
+      '<div class="score-row"><div class="big">' + score + '<small>/' + total + '</small></div>' +
+        '<div><h2 class="rmsg">' + msg + '</h2><p class="rsub">คะแนนรวมจาก ' + total + ' ข้อ</p></div></div>' +
+      '<div class="sides">' +
+        '<div class="side t"><b>' + okT + ' / ' + nT + '</b><span>ข้อที่เฉลยเป็น True ตอบถูก</span></div>' +
+        '<div class="side f"><b>' + okF + ' / ' + nF + '</b><span>ข้อที่เฉลยเป็น False ตอบถูก</span></div>' +
+      '</div>' +
+      '<h3 class="rv-title">ทบทวนทีละข้อ</h3><ol class="rv">' + rows + '</ol>' +
+      '<button class="btn-primary" id="againBtn" type="button">เล่นอีกครั้ง</button>';
+    $('againBtn').addEventListener('click', startGame);
+    i = Q.length - 1;
+    show('result');
+    renderHud();
+    scrollTop();
+  }
+
+  $('startBtn').addEventListener('click', startGame);
+  $('btnTrue').addEventListener('click', function () { answer(true); });
+  $('btnFalse').addEventListener('click', function () { answer(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey || $('s-quiz').hidden || answered) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); answer(true); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); answer(false); }
+  });
+})();
+</script>
+
+</body></html>
